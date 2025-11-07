@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TeaSharp — Compiling happiness. One cup at a time.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f7f3ef;
+      --panel: #fff7f2;
+      --muted: #f2e7da;
+      --card: #fffaf7;
+      --pri: #d48b6e;
+      --pri-2: #f5b78a;
+      --txt: #3e2e25;
+      --sub: #7b655c;
+      --rad: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: linear-gradient(135deg, var(--bg), var(--muted));
+      font-family: "Poppins", sans-serif;
+      color: var(--txt);
+    }
+
+    .welcome-screen, .login-screen, .signup-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .welcome-screen { background: linear-gradient(135deg, #fffaf7, #fceee3); }
+
+    .welcome-screen h1 {
+      font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+      font-size: 100px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--pri), var(--pri-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 25px rgba(212, 139, 110, 0.4);
+    }
+
+    .welcome-screen p {
+      font-size: 26px;
+      color: var(--sub);
+      margin-bottom: 36px;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      background: var(--pri);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(212, 139, 110, 0.25);
+      transition: 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(212, 139, 110, 0.35); }
+    .btn.back { background: #fff; color: var(--pri); border: 2px solid var(--pri); }
+
+    .login-screen, .signup-screen {
+      display: none;
+      background: linear-gradient(135deg, #fff7f2, #f2e7da);
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: var(--rad);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+    }
+    .login-box h2 { margin: 0 0 24px; color: var(--pri); text-align: center; }
+    .field { margin-bottom: 18px; position: relative; text-align: left; }
+    .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .field input {
+      width: 100%; padding: 10px 44px 10px 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 15px;
+    }
+    .toggle-eye { position: absolute; right: 10px; top: 36px; background: none; border: none; cursor: pointer; display: flex; }
+    .toggle-eye svg { width: 22px; height: 22px; stroke: #a18072; }
+    .error { color: #e07b7b; font-size: 14px; margin-top: 6px; margin-bottom: 14px; min-height: 18px; }
+
+    .menu-screen {
+      display: none;
+      min-height: 100vh;
+      padding: 28px 28px 60px;
+    }
+
+    .menu-header {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .menu-title {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      color: var(--txt);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .tabs {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .tab {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background: #fff;
+      color: var(--sub);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: .2s;
+    }
+    .tab:hover { transform: translateY(-1px); }
+    .tab.active {
+      background: linear-gradient(90deg, var(--pri), var(--pri-2));
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(212,139,110,.3);
+    }
+
+    .menu-body {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+    }
+    @media (max-width: 980px) {
+      .menu-body { grid-template-columns: 1fr; }
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    @media (max-width: 1100px) {
+      .cards { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      min-height: 230px;
+    }
+    .card .thumb {
+      height: 120px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffe9dc, #fff7f2);
+      margin-bottom: 14px;
+    }
+    .card h4 { margin: 0 0 6px; }
+    .card .price { font-weight: 800; margin-bottom: 10px; }
+    .card .muted { font-size: 12px; color: var(--sub); margin-top: auto; }
+
+    .card .add {
+      margin-left: auto;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--pri);
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(212,139,110,0.25);
+      transition: .2s;
+    }
+    .card .add.is-disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      filter: grayscale(.15);
+    }
+
+    .cart {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 18px;
+      height: fit-content;
+    }
+    .cart h3 { margin: 6px 0 16px; }
+    .cart .items { display: grid; gap: 10px; max-height: 360px; overflow: auto; padding-right: 6px; }
+    .cart .row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .qtybtn {
+      border: 0; background: var(--muted); padding: 4px 10px; border-radius: 8px; cursor: pointer; font-weight: 700;
+    }
+    .cart .total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; margin-top: 10px; border-top: 2px dashed rgba(62,46,37,.15);
+      font-weight: 800;
+    }
+    .cart .actions { display: flex; gap: 10px; margin-top: 12px; }
+    .btn.ghost { background: #fff; color: var(--pri); border: 2px solid var(--pri); }
+
+    .notice {
+      font-size: 13px; color: var(--sub); background: #fff; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;
+    }
+
+    .userbar{
+      position: fixed;
+      top: clamp(14px, 2vw, 22px);
+      right: calc(env(safe-area-inset-right, 0px) + 22px);
+      display: none;
+      gap: 12px;
+      align-items: center;
+      z-index: 1000;
+    }
+    .pill{
+      background: #fff;
+      color: var(--sub);
+      border: 2px solid rgba(62,46,37,.15);
+      border-radius: 9999px;
+      padding: 10px 20px;
+      line-height: 1;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(0,0,0,.06);
+      white-space: nowrap;
+    }
+    .pill.strong{
+      background: var(--pri);
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(212,139,110,.25);
+    }
+  </style>
+</head>
+<body>
+
+  <section class="welcome-screen" id="welcome">
+    <h1>TeaSharp</h1>
+    <p>Compiling happiness. One cup at a time.</p>
+    <div class="btns" style="display:flex; gap:10px;">
+      <button id="btn-login" class="btn">Log In</button>
+      <button id="btn-signup" class="btn back">Sign Up</button>
+    </div>
+  </section>
+
+  <section class="login-screen" id="login-screen">
+    <div class="login-box">
+      <h2>Welcome Back to TeaSharp!</h2>
+      <form id="login-form" autocomplete="off">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="Email" required>
+          <div id="email-error" class="error"></div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+          <button type="button" class="toggle-eye" id="login-eye" aria-label="Toggle password visibility">
+            <svg id="login-eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg id="login-eye-closed" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.584 10.59A3 3 0 0112 9c3.75 0 6.75 3 9 6-1.116 1.488-2.391 2.75-3.802 3.745M6.93 6.929C4.775 8.513 3.348 10.383 3 12c.348 1.617 1.775 3.487 3.93 5.071M15 15l-1.5-1.5" />
+            </svg>
+          </button>
+          <div id="password-error" class="error"></div>
+        </div>
+        <button type="submit" class="btn" style="width:100%">Log In</button>
+        <button type="button" id="back-btn" class="btn back" style="width:100%;margin-top:10px;">Back</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="signup-screen" id="signup-screen">
+    <div class="login-box">
+      <h2>Create Your TeaSharp Account</h2>
+      <form id="signup-form" autocomplete="off">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="signup-name" placeholder="Full Name" required>
+          <div id="name-error" class="error"></div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="signup-email" placeholder="Email" required>
+          <div id="signup-email-error" class="error"></div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="signup-password" placeholder="Create a password" required>
+          <button type="button" class="toggle-eye" id="signup-eye" aria-label="Toggle password visibility">
+            <svg id="signup-eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg id="signup-eye-closed" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.584 10.59A3 3 0 0112 9c3.75 0 6.75 3 9 6-1.116 1.488-2.391 2.75-3.802 3.745M6.93 6.929C4.775 8.513 3.348 10.383 3 12c.348 1.617 1.775 3.487 3.93 5.071M15 15l-1.5-1.5" />
+            </svg>
+          </button>
+          <div id="signup-password-error" class="error"></div>
+        </div>
+
+        <!-- NEW: Confirm Password field -->
+        <div class="field">
+          <label>Confirm Password</label>
+          <input type="password" id="signup-confirm-password" placeholder="Re-enter password" required>
+          <button type="button" class="toggle-eye" id="signup-confirm-eye" aria-label="Toggle confirm password visibility">
+            <svg id="signup-confirm-eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg id="signup-confirm-eye-closed" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.584 10.59A3 3 0 0112 9c3.75 0 6.75 3 9 6-1.116 1.488-2.391 2.75-3.802 3.745M6.93 6.929C4.775 8.513 3.348 10.383 3 12c.348 1.617 1.775 3.487 3.93 5.071M15 15l-1.5-1.5" />
+            </svg>
+          </button>
+          <div id="signup-confirm-error" class="error"></div>
+        </div>
+        <!-- /NEW -->
+
+        <button type="submit" class="btn" style="width:100%">Sign Up</button>
+        <button type="button" id="signup-back" class="btn back" style="width:100%;margin-top:10px;">Back</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="userbar" class="userbar">
+    <div id="userpill" class="pill">Guest — please log in</div>
+    <button id="loginBtnTop" class="pill strong" style="display:none;">Log in</button>
+    <button id="signupBtnTop" class="pill" style="display:none;">Sign up</button>
+    <button id="logoutBtn" class="pill strong" style="display:none;">Log out</button>
+  </div>
+
+  <section class="menu-screen" id="menu">
+    <div class="menu-header">
+      <div class="menu-title">Milktea Ordering</div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <div class="menu-body">
+      <div>
+        <div class="cards" id="cards"></div>
+      </div>
+
+      <aside class="cart">
+        <h3>Your Cart</h3>
+        <div id="cart-notice" class="notice" style="display:none;">You must be logged in to add items.</div>
+        <div class="items" id="cart-items"></div>
+        <div class="total">
+          <span>Total</span>
+          <span id="cart-total">₱0.00</span>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" id="cart-clear">Clear</button>
+          <button class="btn" id="cart-checkout">Checkout</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const welcome = document.getElementById("welcome");
+    const loginScreen = document.getElementById("login-screen");
+    const signupScreen = document.getElementById("signup-screen");
+    const menuScreen = document.getElementById("menu");
+
+    const btnLogin = document.getElementById("btn-login");
+    const btnSignup = document.getElementById("btn-signup");
+    const backBtn = document.getElementById("back-btn");
+    const signupBack = document.getElementById("signup-back");
+
+    const loginForm = document.getElementById("login-form");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailError = document.getElementById("email-error");
+    const passwordError = document.getElementById("password-error");
+
+    const loginEye = document.getElementById("login-eye");
+    const loginEyeOpen = document.getElementById("login-eye-open");
+    const loginEyeClosed = document.getElementById("login-eye-closed");
+
+    const signupForm = document.getElementById("signup-form");
+    const signupName = document.getElementById("signup-name");
+    const signupEmail = document.getElementById("signup-email");
+    const signupPassword = document.getElementById("signup-password");
+    const signupEye = document.getElementById("signup-eye");
+    const signupEyeOpen = document.getElementById("signup-eye-open");
+    const signupEyeClosed = document.getElementById("signup-eye-closed");
+
+    const signupEmailError = document.getElementById("signup-email-error");
+    const signupPasswordError = document.getElementById("signup-password-error");
+    const nameError = document.getElementById("name-error");
+
+    const userbar = document.getElementById("userbar");
+    const userpill = document.getElementById("userpill");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const loginBtnTop = document.getElementById("loginBtnTop");
+    const signupBtnTop = document.getElementById("signupBtnTop");
+
+    // NEW: Confirm password elements
+    const signupConfirmPassword = document.getElementById("signup-confirm-password");
+    const signupConfirmEye = document.getElementById("signup-confirm-eye");
+    const signupConfirmEyeOpen = document.getElementById("signup-confirm-eye-open");
+    const signupConfirmEyeClosed = document.getElementById("signup-confirm-eye-closed");
+    const signupConfirmError = document.getElementById("signup-confirm-error");
+    // /NEW
+
+    if (!localStorage.getItem("users")) {
+      const demoUsers = [
+        { name: "Customer", email: "customer@gmail.com", password: "teasharp123" },
+        { name: "Tea Lover", email: "tea.lover@gmail.com", password: "ilovemilktea" }
+      ];
+      localStorage.setItem("users", JSON.stringify(demoUsers));
+    }
+
+    loginBtnTop.addEventListener("click", () => {
+      menuScreen.style.display = "none";
+      userbar.style.display = "none";
+      loginScreen.style.display = "flex";
+    });
+    signupBtnTop.addEventListener("click", () => {
+      menuScreen.style.display = "none";
+      userbar.style.display = "none";
+      signupScreen.style.display = "flex";
+    });
+
+    loginEye.addEventListener("click", () => {
+      const isHidden = passwordInput.type === "password";
+      passwordInput.type = isHidden ? "text" : "password";
+      loginEyeOpen.style.display = isHidden ? "none" : "block";
+      loginEyeClosed.style.display = isHidden ? "block" : "none";
+    });
+    signupEye.addEventListener("click", () => {
+      const isHidden = signupPassword.type === "password";
+      signupPassword.type = isHidden ? "text" : "password";
+      signupEyeOpen.style.display = isHidden ? "none" : "block";
+      signupEyeClosed.style.display = isHidden ? "block" : "none";
+    });
+
+    // NEW: toggle for confirm password eye
+    signupConfirmEye.addEventListener("click", () => {
+      const isHidden = signupConfirmPassword.type === "password";
+      signupConfirmPassword.type = isHidden ? "text" : "password";
+      signupConfirmEyeOpen.style.display = isHidden ? "none" : "block";
+      signupConfirmEyeClosed.style.display = isHidden ? "block" : "none";
+    });
+    // /NEW
+
+    btnLogin.addEventListener("click", () => { welcome.style.display = "none"; loginScreen.style.display = "flex"; });
+    btnSignup.addEventListener("click", () => { welcome.style.display = "none"; signupScreen.style.display = "flex"; });
+    backBtn.addEventListener("click", () => { loginScreen.style.display = "none"; welcome.style.display = "flex"; });
+    signupBack.addEventListener("click", () => { signupScreen.style.display = "none"; welcome.style.display = "flex"; });
+
+    const setLoggedIn = (user) => localStorage.setItem("teasharp_session", JSON.stringify(user));
+    const getLoggedIn = () => { try { return JSON.parse(localStorage.getItem("teasharp_session")); } catch { return null; } };
+
+    function updateUserBar() {
+      const u = getLoggedIn();
+      userbar.style.display = "flex";
+      if (u) {
+        userpill.textContent = `${u.name} — logged in`;
+        logoutBtn.style.display = "inline-flex";
+        loginBtnTop.style.display = "none";
+        signupBtnTop.style.display = "none";
+      } else {
+        userpill.textContent = "Guest — please log in";
+        logoutBtn.style.display = "none";
+        loginBtnTop.style.display = "inline-flex";
+        signupBtnTop.style.display = "inline-flex";
+      }
+    }
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      emailError.textContent = "";
+      passwordError.textContent = "";
+
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/i;
+      if (!email.match(emailPattern)) { emailError.textContent = "Please enter a valid email (example@gmail.com)"; return; }
+      if (password.length < 6) { passwordError.textContent = "Password must be at least 6 characters."; return; }
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const userFound = users.find(u => u.email === email);
+      if (!userFound) { passwordError.textContent = "Account doesn't exist. Sign up for a new account."; return; }
+      if (userFound.password !== password) { passwordError.textContent = "Incorrect email or password."; return; }
+
+      setLoggedIn(userFound);
+      alert(`Welcome back, ${userFound.name}!`);
+      loginScreen.style.display = "none";
+      showMenu();
+    });
+
+    // UPDATED: signup submit with confirm-password validation
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = signupName.value.trim();
+      const email = signupEmail.value.trim();
+      const password = signupPassword.value.trim();
+      const confirm = signupConfirmPassword.value.trim(); // NEW
+
+      nameError.textContent = "";
+      signupEmailError.textContent = "";
+      signupPasswordError.textContent = "";
+      signupConfirmError.textContent = ""; // NEW
+
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/i;
+      if (!name) { nameError.textContent = "Please enter your name."; return; }
+      if (!email.match(emailPattern)) { signupEmailError.textContent = "Please enter a valid email."; return; }
+      if (password.length < 6) { signupPasswordError.textContent = "Password must be at least 6 characters."; return; }
+      if (password !== confirm) { signupConfirmError.textContent = "Passwords do not match."; return; } // NEW
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      if (users.find(u => u.email === email)) { signupEmailError.textContent = "This email is already registered."; return; }
+
+      const newUser = { name, email, password };
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Account created successfully! You can now log in.");
+      signupScreen.style.display = "none";
+      loginScreen.style.display = "flex";
+    });
+    // /UPDATED
+
+    const peso = (n) => "₱" + n.toFixed(2);
+
+    const PRODUCTS = {
+      "Milk Tea": [
+        { id:"matcha", name:"Matcha Milk Tea", price:80 },
+        { id:"pearl", name:"Pearl Milk Tea", price:70 },
+        { id:"redbean", name:"Red Bean Milk Tea", price:75 },
+        { id:"taro", name:"Taro Milk Tea", price:85 },
+      ],
+      "Fruit Tea": [
+        { id:"mango", name:"Mango Fruit Tea", price:80 },
+        { id:"strawberry", name:"Strawberry Fruit Tea", price:80 },
+        { id:"lychee", name:"Lychee Fruit Tea", price:70 },
+        { id:"lemon", name:"Lemon Fruit Tea", price:75 },
+        { id:"mixedberries", name:"Mixed Berries", price:85 },
+      ],
+      "Pasta": [
+        { id:"carbonara", name:"Creamy Carbonara", price:150 },
+        { id:"spaghetti", name:"Classic Spaghetti", price:180 },
+        { id:"pesto", name:"Basil Pesto", price:130 },
+        { id:"ravioli", name:"Ravioli", price:160 },
+      ]
+    };
+
+    const tabsEl = document.getElementById("tabs");
+    const cardsEl = document.getElementById("cards");
+    const cartItemsEl = document.getElementById("cart-items");
+    const cartTotalEl = document.getElementById("cart-total");
+    const cartNotice = document.getElementById("cart-notice");
+    const btnClear = document.getElementById("cart-clear");
+    const btnCheckout = document.getElementById("cart-checkout");
+
+    let activeCat = "Milk Tea";
+    let cart = {};
+
+    function setAddButtonsDisabled(disabled){
+      document.querySelectorAll(".card .add").forEach(btn=>{
+        btn.disabled = disabled;
+        btn.classList.toggle("is-disabled", disabled);
+      });
+    }
+
+    function showMenu() {
+      welcome.style.display = "none";
+      signupScreen.style.display = "none";
+      loginScreen.style.display = "none";
+      menuScreen.style.display = "block";
+
+      const logged = getLoggedIn();
+      cartNotice.style.display = logged ? "none" : "block";
+
+      updateUserBar();
+      renderTabs();
+      renderProducts();
+      renderCart();
+
+      setAddButtonsDisabled(!getLoggedIn());
+    }
+
+    function renderTabs() {
+      tabsEl.innerHTML = "";
+      Object.keys(PRODUCTS).forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (cat === activeCat ? " active":"");
+        btn.textContent = cat;
+        btn.addEventListener("click", () => { activeCat = cat; renderTabs(); renderProducts(); setAddButtonsDisabled(!getLoggedIn()); });
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function renderProducts() {
+      cardsEl.innerHTML = "";
+      PRODUCTS[activeCat].forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="thumb"></div>
+          <h4>${p.name}</h4>
+          <div class="price">${peso(p.price)}</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="muted">Add to cart</span>
+            <button class="add">Add</button>
+          </div>
+        `;
+        card.querySelector(".add").addEventListener("click", () => addToCart(p));
+        cardsEl.appendChild(card);
+      });
+    }
+
+    function addToCart(product) {
+      if (!getLoggedIn()) { cartNotice.style.display = "block"; return; }
+      cart[product.id] = cart[product.id] || { ...product, qty: 0 };
+      cart[product.id].qty += 1;
+      renderCart();
+    }
+
+    function changeQty(id, delta) {
+      if (!cart[id]) return;
+      cart[id].qty += delta;
+      if (cart[id].qty <= 0) delete cart[id];
+      renderCart();
+    }
+
+    function renderCart() {
+      cartItemsEl.innerHTML = "";
+      let total = 0;
+      Object.values(cart).forEach(item => {
+        total += item.price * item.qty;
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `
+          <div>
+            <div style="font-weight:700">${item.name}</div>
+            <div class="muted">x${item.qty} • ${peso(item.price)}</div>
+          </div>
+          <div>
+            <button class="qtybtn" aria-label="decrease">-</button>
+            <button class="qtybtn" aria-label="increase">+</button>
+          </div>
+          <div style="font-weight:800">${peso(item.price * item.qty)}</div>
+        `;
+        const [decBtn, incBtn] = row.querySelectorAll(".qtybtn");
+        decBtn.addEventListener("click", () => changeQty(item.id, -1));
+        incBtn.addEventListener("click", () => changeQty(item.id, +1));
+        cartItemsEl.appendChild(row);
+      });
+      cartTotalEl.textContent = peso(total);
+    }
+
+    btnClear.addEventListener("click", () => { cart = {}; renderCart(); });
+    btnCheckout.addEventListener("click", () => {
+      if (!getLoggedIn()) { cartNotice.style.display = "block"; return; }
+      const items = Object.values(cart);
+      if (!items.length) { alert("Your cart is empty."); return; }
+      const summary = items.map(i => `${i.name} x${i.qty} — ${peso(i.price*i.qty)}`).join("\n");
+      alert(`Checkout summary:\n\n${summary}\n\nTotal: ${cartTotalEl.textContent}`);
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("teasharp_session");
+      cart = {};
+      renderCart();
+      menuScreen.style.display = "block";
+      updateUserBar();
+      cartNotice.style.display = "block";
+      setAddButtonsDisabled(true);
+    });
+
+    if (getLoggedIn()) showMenu();
+  </script>
+</body>
+</html>
