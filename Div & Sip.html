@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Div & Sip — Powered by HTML: Happiness, Tea, Milk, & Love.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f7f3ef; --panel:#fff7f2; --muted:#f2e7da; --card:#fffaf7;
+      --pri:#d48b6e; --pri-2:#f5b78a; --txt:#3e2e25; --sub:#7b655c; --rad:18px;
+      --headerH: 0px;
+      --menuBannerH: clamp(360px, 48vh, 560px);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--txt);background:#f5efe9}
+
+    .topbar{position:sticky;top:0;z-index:1000;background:linear-gradient(90deg,var(--pri),var(--pri-2));
+      border-top:2px solid rgba(62,46,37,.15);border-bottom:2px solid rgba(62,46,37,.15);box-shadow:0 6px 16px rgba(0,0,0,.06);color:#fff}
+    .topbar .wrap{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff}
+    .brand img{height:64px;width:auto;display:block}
+    .nav{display:flex;gap:34px}
+    .nav a{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.06em;padding:8px 10px;border-radius:999px;transition:.15s}
+    .nav a:hover{background:rgba(255,255,255,.18)}
+
+    .view{display:none}
+    .view.is-active{display:block}
+
+    .hero{position:relative;height:clamp(460px,90vh,860px);border-bottom:2px solid rgba(62,46,37,.15);overflow:hidden;background:
+      linear-gradient(90deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.10) 45%,rgba(0,0,0,0) 70%),
+      url("https://64.media.tumblr.com/1a797709ec2ce834f22bef9109a257de/6d30600ddbd3d718-8e/s2048x3072/91faa5c06087f62d783e0fe5566022af25bb6ba5.pnj")
+      center/cover no-repeat}
+    .hero .caption{position:absolute;left:clamp(16px,6vw,120px);bottom:clamp(16px,6vw,60px);max-width:560px}
+    .cta{display:inline-block;padding:12px 18px;border-radius:999px;font-weight:800;text-decoration:none;color:#fff;
+      background:linear-gradient(90deg,var(--pri),var(--pri-2));box-shadow:0 6px 18px rgba(212,139,110,.35)}
+
+    #view-info{
+      position:relative;
+      padding-top: clamp(220px, 42vh, 480px);
+      background:linear-gradient(135deg,var(--bg),var(--muted));
+      border-bottom:2px solid rgba(62,46,37,.08);
+    }
+    #view-info::before{
+      content:"";
+      position:absolute; left:0; right:0; top:0;
+      height: clamp(220px, 42vh, 480px);
+      background:
+        url("https://64.media.tumblr.com/29d85bcebb99885c28b2efaabc4fe55d/c51ad19b39bf6d7d-de/s2048x3072/c85c45edab3cd5a886e2887f942af1508a472b7c.pnj")
+        center / cover no-repeat,
+        linear-gradient(135deg,var(--bg),var(--muted));
+      filter:saturate(.95);
+      border-bottom:2px solid rgba(62,46,37,.08);
+    }
+    .about-wrap{max-width:1100px;margin:0 auto;padding:24px 22px 24px;position:relative;z-index:1}
+    .about-card{background:var(--panel);border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.08);padding:26px}
+    .about-title{font-size:34px;font-weight:800;letter-spacing:.5px;margin:0 0 8px}
+    .about-sub{color:var(--sub);margin:0 0 18px}
+    .about-body{line-height:1.9;font-size:16px}
+    .about-body p{margin:0 0 14px}
+    @media (max-width:700px){
+      #view-info{ padding-top: 0; }
+      #view-info::before{ display:none; }
+    }
+
+    #view-menu{
+      position:relative;
+      padding-top: var(--menuBannerH);
+    }
+    #view-menu::before{
+      content:"";
+      position:absolute;
+      left:0; right:0; top:0;
+      height: var(--menuBannerH);
+      background:
+        url("https://64.media.tumblr.com/29d85bcebb99885c28b2efaabc4fe55d/c51ad19b39bf6d7d-de/s2048x3072/c85c45edab3cd5a886e2887f942af1508a472b7c.pnj")
+        right center / cover no-repeat,
+        linear-gradient(135deg,var(--bg),var(--muted));
+      z-index:0;
+      border-bottom: 2px solid rgba(62,46,37,.08);
+    }
+
+    .userbar{
+      position:absolute;
+      top:12px; left:0; right:0;
+      z-index:2;
+      display:none;
+      width:100%;
+      padding:12px 22px 0;
+    }
+    .userbar .inner{
+      max-width:1200px;
+      margin:0 auto;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .menu-wrap{
+      margin-top:16px;
+      background:linear-gradient(135deg,var(--bg),var(--muted));
+      padding:24px 22px 24px;
+    }
+
+    @media (max-width:1100px){
+      :root{ --menuBannerH: clamp(260px, 40vh, 420px); }
+    }
+    @media (max-width:700px){
+      :root{ --menuBannerH: 0px; }
+      #view-menu{ padding-top: 0; }
+      .userbar{ position:static; padding-top:12px; }
+    }
+
+    .menu{max-width:1200px;margin:0 auto}
+    .menu-header{display:flex;align-items:baseline;gap:18px;margin-bottom:18px}
+    .menu-title{font-size:34px;font-weight:800;letter-spacing:.5px}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab{padding:10px 16px;border-radius:999px;border:2px solid transparent;background:#fff;color:var(--sub);font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.06);transition:.2s}
+    .tab.active{background:linear-gradient(90deg,var(--pri),var(--pri-2));color:#fff;box-shadow:0 8px 20px rgba(212,139,110,.3)}
+    .menu-body{margin-top:14px;display:grid;grid-template-columns:1fr 360px;gap:24px}
+    @media (max-width:980px){.menu-body{grid-template-columns:1fr}}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:18px}
+    @media (max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(220px,1fr))}}
+    @media (max-width:640px){.cards{grid-template-columns:1fr}}
+    .card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08);display:flex;flex-direction:column;min-height:230px}
+    .thumb{height:140px;border-radius:12px;margin-bottom:14px;background:linear-gradient(135deg,#ffe9dc,#fff7f2);background-size:contain;background-position:center;background-repeat:no-repeat}
+    .price{font-weight:800;margin-bottom:10px}
+    .muted{font-size:12px;color:var(--sub)}
+    .add{margin-left:auto;padding:8px 14px;border-radius:10px;background:var(--pri);color:#fff;border:0;cursor:pointer;font-weight:600;box-shadow:0 6px 14px rgba(212,139,110,.25);transition:.2s}
+    .add.is-disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.15)}
+    .cart{background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.08);position:static}
+    .items{display:grid;gap:10px;max-height:360px;overflow:auto;padding-right:6px}
+    .row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;background:#fff;border-radius:10px;padding:10px 12px}
+    .qtybtn{border:0;background:var(--muted);padding:4px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+    .total{display:flex;justify-content:space-between;align-items:center;padding-top:10px;margin-top:10px;border-top:2px dashed rgba(62,46,37,.15);font-weight:800}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{border:0;border-radius:12px;padding:12px 18px;background:var(--pri);color:#fff;font-weight:600;cursor:pointer;box-shadow:0 6px 16px rgba(212,139,110,.25)}
+    .btn.ghost{background:#fff;color:var(--pri);border:2px solid var(--pri)}
+    .notice{font-size:13px;color:var(--sub);background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:10px}
+
+    .custom-wrap{margin-top:16px;display:none}
+    .custom-fruit-wrap{margin-top:16px;display:none}
+    .panel{background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);margin-top:12px}
+    .panel h4{margin:0 0 10px}
+    .options{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{border:2px solid rgba(62,46,37,.15);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;user-select:none}
+    .chip input{display:none}
+    .chip.active{background:linear-gradient(90deg,var(--pri),var(--pri-2));color:#fff;border-color:transparent}
+    .chip.disabled{opacity:.45;pointer-events:none}
+    .panel small{color:var(--sub);display:block;margin-top:6px}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:1200;padding:20px}
+    .dialog{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:26px;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+    .dialog h3{margin:0 0 14px;color:var(--pri)}
+    .field{margin:10px 0}
+    .field label{display:block;font-weight:600;margin-bottom:6px}
+    .field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #ccc}
+    .row-btns{display:flex;gap:10px;margin-top:12px}
+    .error{color:#d35;font-size:13px;min-height:18px}
+
+    .pill{background:#fff;color:var(--sub);border:2px solid rgba(62,46,37,.15);border-radius:9999px;padding:10px 20px;line-height:1;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.06);white-space:nowrap}
+    .pill.strong{background:var(--pri);color:#fff;border:0;cursor:pointer;box-shadow:0 6px 16px rgba(212,139,110,.25)}
+    .btn, .btn.ghost, .pill, .pill.strong, .tab, .add, .qtybtn {
+      transition: transform .15s ease, box-shadow .2s ease,
+                  filter .2s ease, background-color .2s ease,
+                  color .2s ease, border-color .2s ease;
+      will-change: transform;
+    }
+    .btn:hover,.pill.strong:hover,.add:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,139,110,.35); }
+    .btn.ghost:hover{ transform: translateY(-2px); background: linear-gradient(90deg,var(--pri),var(--pri-2)); color:#fff; border-color: transparent; box-shadow: 0 8px 20px rgba(212,139,110,.25); }
+    .tab:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.10); }
+    .tab.active:hover{ transform: translateY(-2px); }
+    .pill:hover{ filter: brightness(.98); transform: translateY(-1px); }
+    .qtybtn:hover{ filter: brightness(.95); transform: translateY(-1px); }
+    .add.is-disabled:hover{ transform: none; box-shadow: 0 6px 14px rgba(212,139,110,.25); }
+    button:focus-visible,.tab:focus-visible,.add:focus-visible,.pill:focus-visible,.btn:focus-visible,.qtybtn:focus-visible { outline: 3px solid rgba(212,139,110,.6); outline-offset: 2px; }
+    button:active, .tab:active, .add:active, .pill:active, .btn:active, .qtybtn:active { transform: translateY(0); }
+
+    .notify-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:1400;padding:20px}
+    .notify-dialog{background:linear-gradient(180deg,var(--panel),#fff);border-radius:14px;max-width:480px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.18);overflow:hidden}
+    .notify-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(90deg,var(--pri),var(--pri-2));color:#fff}
+    .notify-header h4{margin:0;font-size:16px;letter-spacing:.4px}
+    .notify-body{padding:18px 20px;color:var(--txt);line-height:1.6}
+    .notify-actions{display:flex;gap:10px;padding:12px 20px 18px;justify-content:flex-end;background:transparent}
+    .notify-close{background:#fff;color:var(--pri);border:0;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+    .notify-ok{background:var(--pri);color:#fff;border:0;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(212,139,110,.18)}
+
+    #view-about{
+      background:linear-gradient(135deg,var(--bg),var(--muted));
+      border-top:2px solid rgba(62,46,37,.08);
+      border-bottom:2px solid rgba(62,46,37,.08);
+      padding:26px 22px 24px;
+    }
+    .way-wrap{max-width:1200px;margin:0 auto}
+    .way-hero{height:clamp(220px,32vh,360px);border-radius:16px;background:
+      url('https://64.media.tumblr.com/29d85bcebb99885c28b2efaabc4fe55d/c51ad19b39bf6d7d-de/s2048x3072/c85c45edab3cd5a886e2887f942af1508a472b7c.pnj') center/cover no-repeat;
+      box-shadow:0 10px 24px rgba(0,0,0,.08);margin-bottom:18px}
+    .way-card{background:var(--panel);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:26px}
+    .way-block{margin:8px 0 22px}
+    .way-h{font-size:34px;letter-spacing:.5px;font-weight:800;margin:0 0 8px;text-transform:none}
+    .way-p{font-size:16px;line-height:1.9;margin:0 0 14px;color:var(--txt);text-align:justify;text-justify:inter-word}
+    .way-sep{height:2px;background:rgba(62,46,37,.12);border:0;margin:16px 0}
+
+    #view-contact{
+      background:linear-gradient(135deg,var(--bg),var(--muted));
+      border-top:2px solid rgba(62,46,37,.08);
+      border-bottom:2px solid rgba(62,46,37,.08);
+      padding:26px 22px 24px;
+    }
+    .contact-wrap{max-width:1200px;margin:0 auto}
+    .contact-hero{height:clamp(220px,32vh,360px);border-radius:16px;background:
+      url('https://64.media.tumblr.com/29d85bcebb99885c28b2efaabc4fe55d/c51ad19b39bf6d7d-de/s2048x3072/c85c45edab3cd5a886e2887f942af1508a472b7c.pnj') center/cover no-repeat;
+      box-shadow:0 10px 24px rgba(0,0,0,.08);margin-bottom:18px}
+    .contact-grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
+    @media (max-width:980px){ .contact-grid{grid-template-columns:1fr} }
+    .contact-card{background:var(--panel);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:18px}
+    .contact-title{font-size:32px;font-weight:800;margin:6px 0 12px}
+    .form-row{margin-bottom:12px}
+    .form-row label{display:block;font-weight:700;margin-bottom:6px}
+    .input, .select, .textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d7c7b9;background:#fff}
+    .textarea{min-height:120px;resize:vertical}
+    .contact-actions{display:flex;gap:10px;margin-top:8px}
+    .sidebar .item{margin-bottom:18px}
+    .sidebar .item h4{margin:0 0 6px}
+    .sidebar .muted{font-size:14px}
+    .required{color:#c03;font-weight:800}
+
+    footer.site-footer{background:linear-gradient(90deg,var(--pri),var(--pri-2));color:#fff;padding:60px 22px;
+      border-top:2px solid rgba(62,46,37,.15);border-bottom:2px solid rgba(62,46,37,.15);box-shadow:0 -6px 16px rgba(0,0,0,.06)}
+    .foot-wrap{max-width:1200px;margin:0 auto;display:grid;gap:40px;grid-template-columns:1.2fr 1fr 1fr;align-items:start}
+    @media (max-width:960px){.foot-wrap{grid-template-columns:1fr}}
+    .footer-logo img{width:140px;height:auto;display:block;filter:drop-shadow(0 8px 20px rgba(0,0,0,.18))}
+    .footer-title{font-size:22px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin:0 0 18px}
+    .footer-text{margin:8px 0;line-height:1.7}
+    .footer-link{display:block;color:#fff;text-decoration:none;opacity:.95;margin:10px 0}
+    .footer-link:hover{text-decoration:underline}
+    .footer-divider{width:240px;height:2px;background:rgba(255,255,255,.25);border:0;margin:18px 0}
+    .footer-bottom{max-width:1200px;margin:26px auto 0;padding-top:18px;border-top:2px solid rgba(255,255,255,.25);font-size:12px;opacity:.85}
+
+    .payment-wrap{max-width:1200px;margin:16px auto 0;padding:0 0 10px;}
+    .payment-panel{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
+    @media (max-width:900px){ .payment-panel{grid-template-columns:1fr;} }
+    .payment-methods .chip{margin-bottom:6px}
+    .pay-fields .field input{background:#fff;border:1px solid #d7c7b9}
+    .summary-box{background:#fff;border-radius:12px;padding:12px}
+  
+    .btn:hover, .btn.ghost:hover, .pill.strong:hover, .add:hover, .qtybtn:hover, .notify-close:hover, .notify-ok:hover, .tab:hover, .chip:hover {
+      transform: translateY(-3px) scale(1.02);
+      filter: brightness(1.03) saturate(1.02);
+      box-shadow: 0 12px 28px rgba(62,46,37,0.12);
+    }
+    .btn.ghost:hover { color: #fff; border-color: transparent; }
+    .pill:hover { transform: translateY(-2px) scale(1.01); }
+    .chip { transition: transform .12s ease, box-shadow .12s ease, filter .12s ease; }
+    .chip.active { box-shadow: 0 10px 22px rgba(212,139,110,.18); }
+    .qtybtn:active, .btn:active, .add:active { transform: translateY(0.5px) scale(0.995); }
+    .notify-ok:hover { box-shadow: 0 10px 22px rgba(212,139,110,.22); }
+    .notify-close:hover { box-shadow: 0 8px 16px rgba(0,0,0,.12); }
+
+
+    .notify-popup {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .notify-popup.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .notify-backdrop {
+      animation: fadeInBackdrop 0.3s ease forwards;
+    }
+    @keyframes fadeInBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOutBackdrop {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="#home" id="brand-home">
+        <img src="https://64.media.tumblr.com/d9a69bad24a1586691237ce4b78e726a/f93c0a2712e92db0-0d/s1280x1920/75dc8fa524791706a8e4f1b2a57652d605deb386.pnj" alt="Div &amp; Sip" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#info" id="nav-info">INFO</a>
+        <a href="#menu" id="nav-menu">MENU</a>
+        <a href="#about" id="nav-about">ABOUT</a>
+        <a href="#contact" id="nav-contact">CONTACT US</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="view-home" class="view is-active" aria-label="Home">
+    <section class="hero" aria-label="Featured">
+      <div class="caption">
+        <a class="cta" href="#menu" id="hero-cta">Order Now</a>
+      </div>
+    </section>
+  </main>
+
+<main id="view-info" class="view" aria-label="Info">
+  <div class="about-wrap">
+    <div class="about-card">
+      <h1 class="about-title">INFO — DIV &amp; SIP</h1>
+      <div class="about-body" style="text-align: justify; text-justify: inter-word;">
+        <p>Div &amp; Sip was founded in 1997 with a bold vision: to craft beverages that blend tradition, innovation, and regional pride. From our humble beginnings in Bulacan, Caloocan, and Malabon, we’ve grown into a nationwide brand known for our commitment to customer experience, creativity, and quality.</p>
+        <p>As a leading name in the milk tea and fresh beverage industry, Div &amp; Sip continues to redefine refreshment with drinks that are made fresh in-store and designed to delight. Our menu is a celebration of flavor — featuring whole leaf teas, real fruits, and locally inspired add-ons that reflect the vibrant tastes of the Filipino palate.</p>
+        <p>We proudly source ingredients from trusted local and international partners, ensuring that every cup is brimming with freshness and authenticity. From our roots in the North to our reach across the Philippines, Div &amp; Sip is more than a beverage brand—it’s a movement of flavor, culture, and community.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+  <main id="view-menu" class="view" aria-label="Menu">
+    <div class="userbar" id="userbar">
+      <div class="inner">
+        <div id="userpill" class="pill">Guest — logged out</div>
+        <button id="loginBtnTop" class="pill strong">Log in</button>
+        <button id="signupBtnTop" class="pill">Sign up</button>
+        <button id="logoutBtn" class="pill strong" style="display:none;">Log out</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <div class="menu">
+        <div class="menu-header">
+          <div class="menu-title">Div &amp; Sip</div>
+          <div class="tabs" id="tabs"></div>
+        </div>
+        <div class="menu-body">
+          <div><div class="cards" id="cards"></div></div>
+
+          <aside class="cart">
+            <h3>Your Cart</h3>
+            <div id="cart-notice" class="notice" style="display:none;">
+              You're browsing as a guest. <strong>Log in or sign up</strong> to add items.
+            </div>
+            <div class="items" id="cart-items"></div>
+            <div class="total"><span>Total</span><span id="cart-total">₱0.00</span></div>
+            <div class="actions">
+              <button class="btn ghost" id="cart-clear">Clear</button>
+              <button class="btn" id="cart-checkout">Checkout</button>
+            </div>
+
+            <div class="custom-wrap" id="custom-wrap">
+              <div class="panel">
+                <h4>Customize Milk Tea</h4>
+                <label for="custom-target" class="muted">Choose item to customize</label>
+                <select id="custom-target" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:10px;"></select>
+              </div>
+
+              <div class="panel" id="panel-size">
+                <h4>Size</h4>
+                <div class="options" id="size-options"></div>
+                <small>Regular and Grande affect price.</small>
+              </div>
+
+              <div class="panel" id="panel-addons">
+                <h4>Add-ons <span class="muted">(max 2)</span></h4>
+                <div class="options" id="addon-options"></div>
+                <small>Add-ons priced per cup and multiplied by quantity.</small>
+              </div>
+
+              <div class="panel" id="panel-ice">
+                <h4>Ice Level</h4>
+                <div class="options" id="ice-options"></div>
+              </div>
+
+              <div class="panel" id="panel-sugar">
+                <h4>Sugar Level</h4>
+                <div class="options" id="sugar-options"></div>
+              </div>
+            </div>
+
+            <div class="custom-fruit-wrap" id="custom-fruit-wrap">
+              <div class="panel">
+                <h4>Fruit Tea Size</h4>
+                <label for="custom-fruit-target" class="muted">Choose fruit tea to size</label>
+                <select id="custom-fruit-target" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:10px;"></select>
+              </div>
+              <div class="panel">
+                <h4>Size</h4>
+                <div class="options" id="fruit-size-options"></div>
+                <small>Small shows the listed price. Large follows the size prices.</small>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div id="payment-wrap" class="payment-wrap" style="display:none;">
+          <div class="panel payment-panel" aria-live="polite">
+            <section class="payment-methods">
+              <h4>Checkout — Choose payment method</h4>
+              <div id="pay-methods" class="options" role="radiogroup" aria-label="Payment methods">
+                <label class="chip active" data-method="card" tabindex="0">Card</label>
+                <label class="chip" data-method="gcash" tabindex="0">GCash</label>
+                <label class="chip" data-method="maya" tabindex="0">Maya</label>
+              </div>
+
+              <div class="pay-fields" id="pay-fields">
+                <div data-form="card">
+                  <div class="field"><label>Cardholder name</label><input id="card-name" type="text" placeholder="Ex: Derry Namon"></div>
+                  <div class="field"><label>Card number</label><input id="card-number" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456"></div>
+                  <div class="field"><label>Expiry (MM/YY)</label><input id="card-exp" placeholder="12/29"></div>
+                  <div class="field"><label>CVC</label><input id="card-cvc" inputmode="numeric" maxlength="4" placeholder="123"></div>
+                </div>
+                <div data-form="gcash" style="display:none;">
+                  <div class="field"><label>GCash mobile number</label><input id="gcash-msisdn" inputmode="numeric" placeholder="09xxxxxxxxx"></div>
+                </div>
+                <div data-form="maya" style="display:none;">
+                  <div class="field"><label>Maya mobile number</label><input id="maya-msisdn" inputmode="numeric" placeholder="09xxxxxxxxx"></div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn ghost" id="pay-back">Back to cart</button>
+                <button class="btn" id="pay-now">Pay now</button>
+              </div>
+              <div class="muted" id="pay-error" style="margin-top:6px;min-height:18px;"></div>
+            </section>
+
+            <aside>
+              <h4>Order Summary</h4>
+              <div class="summary-box">
+                <ul id="pay-items"></ul>
+                <div class="total" style="margin-top:10px;">
+                  <span>Total</span>
+                  <span id="pay-total">₱0.00</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="view-about" class="view" aria-label="About">
+    <div class="way-wrap">
+      <div class="way-hero" role="img" aria-label="About banner"></div>
+      <div class="way-card">
+        <section class="way-block">
+          <h2 class="way-h">OUR VISION</h2>
+          <p class="way-p">To craft beverages and experiences that exceed expectations—delivering quality, freshness, and innovation in every cup.</p>
+        </section>
+        <hr class="way-sep" />
+        <section class="way-block">
+          <h2 class="way-h">OUR MISSION</h2>
+          <p class="way-p">To build lasting relationships with our customers by offering exceptional service, locally inspired flavors, and a seamless digital experience through the Div & Sip app and beyond.</p>
+        </section>
+        <hr class="way-sep" />
+        <section class="way-block">
+          <h2 class="way-h">OUR VALUES</h2>
+          <p class="way-p"><strong>Creativity &amp; Innovation:</strong> We grow through bold ideas, inventive flavors, and thoughtful design, from our drinks to our branding.</p>
+          <p class="way-p"><strong>Ethics &amp; Integrity:</strong> We uphold honesty and professionalism in every aspect of our business, from sourcing to service.</p>
+          <p class="way-p"><strong>Respect &amp; Trust:</strong> We treat every customer with genuine care and faith in their loyalty.</p>
+          <p class="way-p"><strong>Local Pride:</strong> We honor our roots in Caloocan, Malabon, and Bulacan, and celebrate Filipino culture in everything we do.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <main id="view-contact" class="view" aria-label="Contact Us">
+    <div class="contact-wrap">
+      <div class="contact-hero" role="img" aria-label="Contact banner"></div>
+      <div class="contact-card">
+        <div class="contact-title">CONTACT DIV & SIP</div>
+        <div class="contact-grid">
+          <section aria-label="Contact form">
+            <form id="contact-form">
+              <div class="form-row">
+                <label for="c-name">Name <span class="required">*</span></label>
+                <input class="input" type="text" id="c-name" required placeholder="Name">
+              </div>
+              <div class="form-row">
+                <label for="c-email">Email <span class="required">*</span></label>
+                <input class="input" type="email" id="c-email" required placeholder="Email">
+              </div>
+              <div class="form-row">
+                <label for="c-subject">Subject <span class="required">*</span></label>
+                <select class="select" id="c-subject" required>
+                  <option value="" selected disabled>Select a subject</option>
+                  <option>General Feedback</option>
+                  <option>Marketing</option>
+                  <option>Media</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="c-message">Message <span class="required">*</span></label>
+                <textarea class="textarea" id="c-message" required placeholder="Write your message here..."></textarea>
+              </div>
+              <div class="contact-actions">
+                <button type="submit" class="btn">Send</button>
+                <button type="reset" class="btn ghost">Clear</button>
+              </div>
+              <div id="contact-msg" class="muted" style="margin-top:8px;"></div>
+            </form>
+          </section>
+          <aside class="sidebar" aria-label="Contact information">
+            <div class="item">
+              <h4>General Inquiry</h4>
+              <div class="muted"><a href="mailto:namon.derrydenice@ue.edu.ph">namon.derrydenice@ue.edu.ph</a></div>
+            </div>
+            <div class="item">
+              <h4>Customer Service</h4>
+              <div class="muted"><a href="mailto:flaviano.jana@ue.edu.ph">flaviano.jana@ue.edu.ph</a></div>
+            </div>
+            <hr class="footer-divider" style="margin:10px 0">
+            <div class="item">
+              <h4>Office</h4>
+              <div class="muted">
+                Rizal Ave Ext, Grace Park East,<br>
+                Caloocan, 1403 Metro Manila, Philippines
+              </div>
+
+              <h4 style="margin-top:12px;">Headquarters</h4>
+              <div class="muted">
+                3019 MacArthur Hwy,<br>
+                Marilao, Bulacan, Philippines
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="contact-footer">
+    <div class="foot-wrap">
+      <div class="footer-logo">
+        <img src="https://64.media.tumblr.com/d9a69bad24a1586691237ce4b78e726a/f93c0a2712e92db0-0d/s1280x1920/75dc8fa524791706a8e4f1b2a57652d605deb386.pnj" alt="Div &amp; Sip logo">
+      </div>
+      <div>
+        <h3 class="footer-title">Contact Us</h3>
+        <p class="footer-text">
+          Rizal Ave Ext, Grace Park East,<br>
+          Caloocan, 1403 Metro Manila, Philippines
+        </p>
+        <p class="footer-text">
+          <a class="footer-link" href="mailto:namon.derrydenice@ue.edu.ph">namon.derrydenice@ue.edu.ph</a>
+        </p>
+        <hr class="footer-divider">
+      </div>
+      <div>
+        <h3 class="footer-title">Quick Links</h3>
+        <a class="footer-link" href="#info">Info</a>
+        <a class="footer-link" href="#menu">Menu</a>
+        <a class="footer-link" href="#about">About</a>
+        <a class="footer-link" href="#contact">Contact Us</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Div &amp; Sip. All rights reserved.</div>
+  </footer>
+
+  <div class="modal" id="login-modal" aria-hidden="true">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <h3 id="login-title">Log in</h3>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <div class="error" id="login-error"></div>
+      <div class="row-btns">
+        <button class="btn strong" id="login-submit">Log in</button>
+        <button class="btn ghost" id="login-cancel">Cancel</button>
+      </div>
+      <div class="field" style="margin-top:10px;font-size:13px;color:#555;">
+        No account? <a href="#" id="go-signup">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="signup-modal" aria-hidden="true">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="signup-title">
+      <h3 id="signup-title">Create account</h3>
+      <div class="field"><label>Name</label><input type="text" id="su-name" placeholder="Full name"></div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="At least 6 characters"></div>
+      <div class="error" id="signup-error"></div>
+      <div class="row-btns">
+        <button class="btn strong" id="signup-submit">Sign up</button>
+        <button class="btn ghost" id="signup-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notify-modal" id="notify-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="notify-dialog" role="document">
+      <div class="notify-header">
+        <h4 id="notify-title">Notice</h4>
+        <button id="notify-x" aria-label="Close notification" class="notify-close">✕</button>
+      </div>
+      <div class="notify-body" id="notify-body">Message goes here</div>
+      <div class="notify-actions">
+        <button id="notify-ok" class="notify-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function syncHeaderHeight(){
+      const h = document.querySelector('.topbar')?.offsetHeight || 0;
+      document.documentElement.style.setProperty('--headerH', h + 'px');
+    }
+    window.addEventListener('load', syncHeaderHeight);
+    window.addEventListener('resize', syncHeaderHeight);
+
+    (function(){
+      const modal = document.getElementById('notify-modal');
+      const titleEl = document.getElementById('notify-title');
+      const bodyEl = document.getElementById('notify-body');
+      const okBtn = document.getElementById('notify-ok');
+      const xBtn = document.getElementById('notify-x');
+      let cb = null;
+
+      function showNotify(message, title, callback){
+        titleEl.textContent = title || 'Notice';
+        bodyEl.textContent = message || '';
+        cb = typeof callback === 'function' ? callback : null;
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden','false');
+        okBtn.focus();
+      }
+      function closeNotify(){
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden','true');
+        if(cb){ try{ cb(); }catch(e){} cb = null; }
+      }
+      okBtn.addEventListener('click', closeNotify);
+      xBtn.addEventListener('click', closeNotify);
+      modal.addEventListener('click', (e)=>{ if(e.target===modal) closeNotify(); });
+      window.showNotify = showNotify;
+    })();
+
+    const viewHome = document.getElementById('view-home');
+    const viewMenu = document.getElementById('view-menu');
+    const viewInfo = document.getElementById('view-info');
+    const viewAbout = document.getElementById('view-about');
+    const viewContact = document.getElementById('view-contact');
+    const userbar  = document.getElementById('userbar');
+
+    function showView(which){
+      viewHome.classList.remove('is-active');
+      viewMenu.classList.remove('is-active');
+      viewInfo.classList.remove('is-active');
+      viewAbout.classList.remove('is-active');
+      viewContact.classList.remove('is-active');
+
+      if(which==='menu'){
+        viewMenu.classList.add('is-active');
+        userbar.style.display = 'block';
+        if (!window.__menuBooted) { bootMenu(); window.__menuBooted = true; }
+        refreshUserbar();
+        window.__menu_refreshBars?.();
+      } else if (which==='info'){
+        viewInfo.classList.add('is-active');
+        userbar.style.display = 'none';
+      } else if (which==='about'){
+        viewAbout.classList.add('is-active');
+        userbar.style.display = 'none';
+      } else if (which==='contact'){
+        viewContact.classList.add('is-active');
+        userbar.style.display = 'none';
+      } else {
+        viewHome.classList.add('is-active');
+        userbar.style.display = 'none';
+      }
+      window.scrollTo({top:0, behavior:'instant'});
+      syncHeaderHeight();
+    }
+    function handleRoute(){
+      const hash = (location.hash || '#home').toLowerCase();
+      if(hash.includes('menu'))         showView('menu');
+      else if(hash.includes('info'))    showView('info');
+      else if(hash.includes('about'))   showView('about');
+      else if(hash.includes('contact')) showView('contact');
+      else                              showView('home');
+    }
+    window.addEventListener('hashchange', handleRoute);
+    handleRoute();
+
+    document.getElementById('hero-cta').addEventListener('click', ()=>location.hash='#menu');
+    document.getElementById('nav-menu').addEventListener('click', ()=>location.hash='#menu');
+    document.getElementById('brand-home').addEventListener('click', ()=>location.hash='#home');
+    document.getElementById('nav-info').addEventListener('click', ()=>location.hash='#info');
+    document.getElementById('nav-about').addEventListener('click', ()=>location.hash='#about');
+    document.getElementById('nav-contact').addEventListener('click', ()=>location.hash='#contact');
+
+    const cForm = document.getElementById('contact-form');
+    const cMsg  = document.getElementById('contact-msg');
+    cForm?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('c-name').value.trim();
+      const email = document.getElementById('c-email').value.trim();
+      const sub = document.getElementById('c-subject').value;
+      const msg = document.getElementById('c-message').value.trim();
+      if(!name || !email || !sub || !msg){
+        cMsg.textContent = 'Please complete all required fields.';
+        return;
+      }
+      cMsg.textContent = 'Thanks! Your message has been captured locally for demo purposes.';
+      cForm.reset();
+    });
+
+    const setSession = u => localStorage.setItem("divsip_session", JSON.stringify(u));
+    const getSession = () => { try { return JSON.parse(localStorage.getItem("divsip_session")); } catch { return null; } };
+    if (!localStorage.getItem("users")) {
+      localStorage.setItem("users", JSON.stringify([{name:"Jana",email:"customer@gmail.com",password:"divsip123"}]));
+    }
+
+    const userpill = document.getElementById('userpill');
+    const loginBtnTop = document.getElementById('loginBtnTop');
+    const signupBtnTop = document.getElementById('signupBtnTop');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function refreshUserbar(){
+      const u = getSession();
+      if (u) {
+        userpill.textContent = `${u.name} — logged in`;
+        loginBtnTop.style.display = "none";
+        signupBtnTop.style.display = "none";
+        logoutBtn.style.display = "inline-flex";
+      } else {
+        userpill.textContent = "Guest — logged out";
+        loginBtnTop.style.display = "inline-flex";
+        signupBtnTop.style.display = "inline-flex";
+        logoutBtn.style.display = "none";
+      }
+    }
+
+    function bootMenu(){
+      const peso = n => "₱" + n.toFixed(2);
+
+      const IMAGES={ 
+        matcha:"https://64.media.tumblr.com/13f9e873d39eeb01c312f1798e35d225/8d6d79763be62bd3-b9/s500x750/5ca478a21309cd80bfc9d97754c0b1b5067e3507.pnj",
+        pearl:"https://64.media.tumblr.com/8efae0f709f61ffa10fde4738b2e2466/8d6d79763be62bd3-11/s500x750/8409c6bab5fdb985b47548e63a16d995c32e318e.pnj",
+        redbean:"https://64.media.tumblr.com/867e870a6c5202af405b6af08d59be4f/8d6d79763be62bd3-61/s500x750/1bf0e75e208eb7ff3c74ed55a1bd0961698bc624.pnj",
+        taro:"https://64.media.tumblr.com/7d743b82493007c7680d2aa1e11744ea/8d6d79763be62bd3-c2/s500x750/5cd3cf9044525e3d2673862371befeb7ddf0e4d5.pnj",
+        mango:"https://64.media.tumblr.com/2e38bf9475d75a334b2dacd5a871c160/08fd66c9b97b4525-f0/s500x750/f8bd57d38b275868ffce1cc3a8a571381f7e09a2.pnj",
+        strawberry:"https://64.media.tumblr.com/1ec6b1ca6ca25e7264a137e6579bbdae/08fd66c9b97b4525-32/s500x750/f5001dca2bfc781ac61ab23f3bd4f251efb5271b.pnj",
+        lychee:"https://64.media.tumblr.com/c82566b09709a48684cc8bb8847d44c7/08fd66c9b97b4525-44/s500x750/85639503cf87ec1c5f7a5708c94077cf725b8049.pnj",
+        lemon:"https://64.media.tumblr.com/4bfb1ecf7c010c9c703a4bcc0327f05f/08fd66c9b97b4525-84/s500x750/0d657f4c927c7b8993d12daaed75c7e992f8aef8.pnj",
+        blueberry:"https://64.media.tumblr.com/abb86a10d2db0347f2f8abcc3139d970/08fd66c9b97b4525-19/s500x750/bbd94124608c4c64c9c40971be4c5c58e342517a.pnj",
+        mixedberries:"https://64.media.tumblr.com/7844a279a74b019bbe8812ed26cb18c8/2eaa7e920b4cc1cd-51/s500x750/88e497baa8ad1491dd554545a0201287470e0a04.pnj",
+        carbonara:"https://64.media.tumblr.com/19a9b757549684bc3cee70a8bfc098ef/833f323227d10735-c3/s500x750/ab457ef0aece3de37e6afd715b3b96f18e84a515.pnj",
+        lasagna:"https://64.media.tumblr.com/65a66358b70371ff1d69d4ea7cd7d3a8/b490729432226402-fc/s500x750/d4d5e7b1c9d26274b88eb20bc569878e64627d2e.pnj",
+        spaghetti:"https://64.media.tumblr.com/6e4d2d0dcbbf4e319c31a47f0a27d491/833f323227d10735-3d/s500x750/3b008de059226bdfcda2d5be8d646e5b775ed73b.pnj",
+        pesto:"https://64.media.tumblr.com/5c36b6221d4edc2f3a6a03ee4256a133/833f323227d10735-57/s500x750/ff641d3b7c9370ccf640a5b97066edd076517ef9.pnj",
+        ravioli:"https://64.media.tumblr.com/19f53e4752c91a55e28f660c85ef3586/833f323227d10735-a3/s500x750/d43ac103b478a9491857c4d65694aca94613b7b7.pnj",
+        thai:"https://64.media.tumblr.com/e4139d46606530514a3e64ad9ffd145f/c07039b03bac7804-0c/s500x750/9cea1af4c657c347d348c2a1363a565a82bb0d14.pnj",
+        oolong:"https://64.media.tumblr.com/9c05d7f4cbfac78c80f8aa750821815e/c07039b03bac7804-bf/s500x750/042136c1c12c3d0dbeb4e8497a7deaf1c7c178ae.pnj",
+        oat:"https://64.media.tumblr.com/d17e6553f5fbd66af99ced63d887f59b/c07039b03bac7804-3c/s500x750/bfb2337aab23c1a673d4315332d66af73775f71e.pnj",
+        cookiescream:"https://64.media.tumblr.com/4819531963cdc40e66d098f54869ca4e/9fda5b7d2ed809a0-9d/s500x750/554b0abf0c151c7a3a1b8d2f247ec1db3418a420.pnj",
+        hokkaido:"https://64.media.tumblr.com/d4c4d3df65947d0f806edbe976628e53/c07039b03bac7804-b0/s500x750/d5d50e38336502ceb7f2f5a54e5bbe26c1fd0140.pnj"
+      };
+
+      const MILKTEA_PRICES = {
+        matcha:   { regular:130, grande:150 },
+        pearl:    { regular:115, grande:130 },
+        redbean:  { regular:110, grande:125 },
+        taro:     { regular:120, grande:145 },
+        thai:     { regular:130, grande:150 },
+        oolong:   { regular:115, grande:135 },
+        oat:      { regular:110, grande:130 },
+        cookiescream:{ regular:115, grande:135 },
+        hokkaido: { regular:110, grande:130 },
+      };
+
+      const FRUITTEA_LARGE = {
+        mango:95, strawberry:95, lychee:80, lemon:90, blueberry:99, mixedberries:99
+      };
+
+      const ADDONS = [
+        {id:'tapioca',name:'Tapioca pearls',price:20},
+        {id:'crystal',name:'Crystal boba',price:25},
+        {id:'pudding',name:'Egg pudding',price:25},
+        {id:'cheesefoam',name:'Cheese foam',price:30},
+        {id:'milkfoam',name:'Milk foam',price:25},
+        {id:'grassjelly',name:'Grass jelly',price:20},
+        {id:'coffeejelly',name:'Coffee jelly',price:25},
+        {id:'aloe',name:'Aloe vera',price:25},
+        {id:'popping',name:'Popping boba',price:30},
+        {id:'fruitbits',name:'Fruit bits',price:30},
+        {id:'oreo',name:'Oreo crumbs',price:25},
+      ];
+      const ICE_LEVELS   = ['Normal ice','Less ice','No ice','Extra ice'];
+      const SUGAR_LEVELS = ['25% sugar','50% sugar','75% sugar','100% sugar'];
+
+      const PRODUCTS={
+        "Milk Tea":[
+          {id:"matcha",name:"Matcha Milk Tea",category:"Milk Tea"},
+          {id:"pearl",name:"Pearl Milk Tea",category:"Milk Tea"},
+          {id:"redbean",name:"Red Bean Milk Tea",category:"Milk Tea"},
+          {id:"taro",name:"Taro Milk Tea",category:"Milk Tea"},
+          {id:"thai",name:"Thai Milk Tea",category:"Milk Tea"},
+          {id:"oolong",name:"Oolong Milk Tea",category:"Milk Tea"},
+          {id:"oat",name:"Oat Milk Tea",category:"Milk Tea"},
+          {id:"cookiescream",name:"Cookies & Cream Milk Tea",category:"Milk Tea"},
+          {id:"hokkaido",name:"Hokkaido Milk Tea",category:"Milk Tea"},
+        ],
+        "Fruit Tea":[
+          {id:"mango",name:"Mango Fruit Tea",price:80},
+          {id:"strawberry",name:"Strawberry Fruit Tea",price:80},
+          {id:"lychee",name:"Lychee Fruit Tea",price:70},
+          {id:"lemon",name:"Lemon Fruit Tea",price:75},
+          {id:"blueberry",name:"Blueberry Fruit Tea",price:85},
+          {id:"mixedberries",name:"Mixed Berries",price:85}
+        ],
+        "Pasta":[
+          {id:"carbonara",name:"Creamy Carbonara",price:150},
+          {id:"lasagna",name:"Lasagna",price:220},
+          {id:"spaghetti",name:"Classic Spaghetti",price:180},
+          {id:"pesto",name:"Basil Pesto",price:130},
+          {id:"ravioli",name:"Ravioli",price:160}
+        ]
+      };
+
+      const tabsEl=document.getElementById('tabs'),
+            cardsEl=document.getElementById('cards'),
+            cartItemsEl=document.getElementById('cart-items'),
+            cartTotalEl=document.getElementById('cart-total'),
+            cartNotice=document.getElementById('cart-notice'),
+            customWrap=document.getElementById('custom-wrap'),
+            customTarget=document.getElementById('custom-target'),
+            sizeOptions=document.getElementById('size-options'),
+            addonOptions=document.getElementById('addon-options'),
+            iceOptions=document.getElementById('ice-options'),
+            sugarOptions=document.getElementById('sugar-options'),
+            customFruitWrap=document.getElementById('custom-fruit-wrap'),
+            customFruitTarget=document.getElementById('custom-fruit-target'),
+            fruitSizeOptions=document.getElementById('fruit-size-options');
+
+      const paymentWrap = document.getElementById('payment-wrap');
+      const payMethods = document.getElementById('pay-methods');
+      const payItems = document.getElementById('pay-items');
+      const payTotal = document.getElementById('pay-total');
+      const payBack = document.getElementById('pay-back');
+      const payNow = document.getElementById('pay-now');
+      const payFields = document.getElementById('pay-fields');
+      const payError = document.getElementById('pay-error');
+      let selectedMethod = 'card';
+
+      let activeCat="Milk Tea", cart={};
+
+      function renderTabs(){
+        tabsEl.innerHTML="";
+        Object.keys(PRODUCTS).forEach(cat=>{
+          const b=document.createElement('button');
+          b.className="tab"+(cat===activeCat?" active":"");
+          b.textContent=cat;
+          b.addEventListener('click',()=>{activeCat=cat;renderTabs();renderProducts();lockMenuButtons();});
+          tabsEl.appendChild(b);
+        });
+      }
+
+      function getFruitSmallPrice(id){
+        const rec = (PRODUCTS["Fruit Tea"]||[]).find(x=>x.id===id);
+        return rec ? rec.price : 0;
+      }
+
+      function displayPrice(p){
+        if(p.category==="Milk Tea"){
+          const base = MILKTEA_PRICES[p.id]?.regular || 0;
+          return `₱${base.toFixed(2)} (Regular)`;
+        }
+        if(p.category==="Fruit Tea"){
+          const base = getFruitSmallPrice(p.id);
+          return `₱${base.toFixed(2)} (Small)`;
+        }
+        return peso(p.price);
+      }
+
+      function renderProducts(){
+        cardsEl.innerHTML="";
+        PRODUCTS[activeCat].forEach(p=>{
+          const el=document.createElement('div');
+          el.className="card";
+          el.innerHTML=`
+            <div class="thumb" style="background-image:url('${IMAGES[p.id]}')" role="img" aria-label="${p.name}"></div>
+            <h4>${p.name}</h4>
+            <div class="price">${displayPrice({...p, category: activeCat})}</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="muted">Add to cart</span>
+              <button class="add">Add</button>
+            </div>`;
+          el.querySelector('.add').addEventListener('click',()=>addToCart({...p, category: activeCat}));
+          cardsEl.appendChild(el);
+        });
+      }
+
+      function lockMenuButtons(){
+        const logged=!!getSession();
+        cartNotice.style.display=logged?"none":"block";
+        document.querySelectorAll('.add').forEach(b=>{
+          b.disabled=!logged;
+          b.classList.toggle('is-disabled',!logged);
+        });
+      }
+
+      function addToCart(p){
+        if(!getSession()){ openLogin(); return; }
+        const key = p.id;
+        cart[key]=cart[key]||{
+          id:p.id, name:p.name, qty:0,
+          category:p.category||"",
+          size:(p.category==="Milk Tea"?"regular": (p.category==="Fruit Tea"?"small":null)),
+          addOns:[],
+          ice:(p.category==="Milk Tea"?ICE_LEVELS[0]:null),
+          sugar:(p.category==="Milk Tea"?SUGAR_LEVELS[3]:null)
+        };
+        cart[key].qty++;
+        renderCart();
+        if(p.category==="Milk Tea"){ ensureCustomizationVisible(key); }
+        if(p.category==="Fruit Tea"){ ensureFruitCustomizationVisible(key); }
+      }
+
+      function changeQty(id,delta){
+        if(!cart[id])return;
+        cart[id].qty+=delta;
+        if(cart[id].qty<=0) delete cart[id];
+        renderCart();
+        refreshCustomizationVisibility();
+      }
+
+      function itemPrice(item){
+        let base=0;
+        if(item.category==="Milk Tea"){
+          const table = MILKTEA_PRICES[item.id];
+          base = table ? table[item.size||'regular'] : 0;
+        }else if(item.category==="Fruit Tea"){
+          const small = getFruitSmallPrice(item.id);
+          base = (item.size==='large') ? (FRUITTEA_LARGE[item.id]||small) : small;
+        }else{
+          let pr=null;
+          Object.values(PRODUCTS).flat().forEach(x=>{ if(x.id===item.id && x.price!=null){ pr=x.price; }});
+          base = pr||0;
+        }
+        const addonsTotal = (item.addOns||[]).reduce((s,a)=>{
+          const ad = ADDONS.find(x=>x.id===a); return s + (ad?ad.price:0);
+        },0);
+        return (base + addonsTotal) * (item.qty||1);
+      }
+
+      function renderCart(){
+        cartItemsEl.innerHTML="";
+        let total=0;
+        Object.values(cart).forEach(item=>{
+          const lineTotal = itemPrice(item);
+          total+= lineTotal;
+          const row=document.createElement('div');
+          row.className="row";
+          const sizeBadge = item.size ? ` • ${item.size[0].toUpperCase()+item.size.slice(1)}` : '';
+          const addonBadge = (item.addOns&&item.addOns.length) ? ` • ${item.addOns.length} add-on(s)` : '';
+          row.innerHTML=`
+            <div>
+              <div style="font-weight:700">${item.name}</div>
+              <div class="muted">x${item.qty}${sizeBadge}${addonBadge}</div>
+            </div>
+            <div><button class="qtybtn">-</button><button class="qtybtn">+</button></div>
+            <div style="font-weight:800">${peso(lineTotal)}</div>`;
+          const [dec,inc]=row.querySelectorAll('.qtybtn');
+          dec.addEventListener('click',()=>changeQty(item.id,-1));
+          inc.addEventListener('click',()=>changeQty(item.id,1));
+          cartItemsEl.appendChild(row);
+        });
+        cartTotalEl.textContent=peso(total);
+        populateCustomizationSelector();
+        populateFruitCustomizationSelector();
+      }
+
+      function milkTeaItems(){
+        return Object.values(cart).filter(i=>i.category==="Milk Tea");
+      }
+      function fruitTeaItems(){
+        return Object.values(cart).filter(i=>i.category==="Fruit Tea");
+      }
+
+      function ensureCustomizationVisible(focusId){
+        const list = milkTeaItems();
+        customWrap.style.display = list.length ? 'block' : 'none';
+        populateCustomizationSelector(focusId);
+        if(list.length && focusId){
+          customTarget.value = focusId;
+          renderCustomizationPanels();
+        }
+      }
+      function ensureFruitCustomizationVisible(focusId){
+        const list = fruitTeaItems();
+        customFruitWrap.style.display = list.length ? 'block' : 'none';
+        populateFruitCustomizationSelector(focusId);
+        if(list.length && focusId){
+          customFruitTarget.value = focusId;
+          renderFruitCustomizationPanel();
+        }
+      }
+
+      function refreshCustomizationVisibility(){
+        ensureCustomizationVisible(customTarget.value);
+        ensureFruitCustomizationVisible(customFruitTarget.value);
+      }
+
+      function populateCustomizationSelector(preferId){
+        const list = milkTeaItems();
+        customWrap.style.display = list.length ? 'block' : 'none';
+        const current = preferId || customTarget.value || (list[0]?.id || '');
+        customTarget.innerHTML = list.map(i=>`<option value="${i.id}">${i.name} (x${i.qty})</option>`).join('');
+        if(current) customTarget.value = current;
+        if(list.length) renderCustomizationPanels();
+      }
+
+      function populateFruitCustomizationSelector(preferId){
+        const list = fruitTeaItems();
+        customFruitWrap.style.display = list.length ? 'block' : 'none';
+        const current = preferId || customFruitTarget.value || (list[0]?.id || '');
+        customFruitTarget.innerHTML = list.map(i=>`<option value="${i.id}">${i.name} (x${i.qty})</option>`).join('');
+        if(current) customFruitTarget.value = current;
+        if(list.length) renderFruitCustomizationPanel();
+      }
+
+      function renderOptions(container, items, isMulti, getId, isActive, onToggle, isDisabled){
+        container.innerHTML = '';
+        items.forEach(opt=>{
+          const id = getId(opt);
+          const active = !!isActive(id,opt);
+          const disabled = !!(isDisabled && isDisabled(id,opt,active));
+          const chip = document.createElement('label');
+          chip.className = 'chip' + (active?' active':'') + (disabled?' disabled':'');
+          chip.innerHTML = `<input type="${isMulti?'checkbox':'radio'}" name="${container.id}">${opt.label || opt.name || id}`;
+          chip.addEventListener('click', (e)=>{
+            e.preventDefault();
+            if(disabled) return;
+            onToggle(id,opt);
+          });
+          container.appendChild(chip);
+        });
+      }
+
+      function renderCustomizationPanels(){
+        const id = customTarget.value;
+        const item = cart[id];
+        if(!item){ customWrap.style.display='none'; return; }
+
+        renderOptions(
+          sizeOptions,
+          [{id:'regular', label:`Regular (${peso(MILKTEA_PRICES[id].regular)})`},
+           {id:'grande',  label:`Grande (${peso(MILKTEA_PRICES[id].grande)})`}],
+          false,
+          o=>o.id,
+          (v)=>item.size===v,
+          (v)=>{ item.size = v; renderCart(); renderCustomizationPanels(); }
+        );
+
+        const selectedCount = item.addOns.length;
+        renderOptions(
+          addonOptions,
+          ADDONS.map(a=>({id:a.id,label:`${a.name} — ${peso(a.price)}`})),
+          true,
+          o=>o.id,
+          (v)=>item.addOns.includes(v),
+          (v)=>{
+            if(item.addOns.includes(v)){
+              item.addOns = item.addOns.filter(x=>x!==v);
+            }else{
+              if(item.addOns.length >= 2) return;
+              item.addOns.push(v);
+            }
+            renderCart();
+            renderCustomizationPanels();
+          },
+          (v,_opt,isActive)=> !isActive && selectedCount >= 2
+        );
+
+        renderOptions(
+          iceOptions,
+          ICE_LEVELS.map(x=>({id:x,label:x})),
+          false,
+          o=>o.id,
+          (v)=>item.ice===v,
+          (v)=>{ item.ice=v; renderCustomizationPanels(); }
+        );
+
+        renderOptions(
+          sugarOptions,
+          SUGAR_LEVELS.map(x=>({id:x,label:x})),
+          false,
+          o=>o.id,
+          (v)=>item.sugar===v,
+          (v)=>{ item.sugar=v; renderCustomizationPanels(); }
+        );
+      }
+
+      function renderFruitCustomizationPanel(){
+        const id = customFruitTarget.value;
+        const item = cart[id];
+        if(!item){ customFruitWrap.style.display='none'; return; }
+        const smallPrice = getFruitSmallPrice(id);
+        const largePrice = FRUITTEA_LARGE[id] || smallPrice;
+        renderOptions(
+          fruitSizeOptions,
+          [{id:'small', label:`Small (${peso(smallPrice)})`},
+           {id:'large', label:`Large (${peso(largePrice)})`}],
+          false,
+          o=>o.id,
+          (v)=>item.size===v,
+          (v)=>{ item.size = v; renderCart(); renderFruitCustomizationPanel(); }
+        );
+      }
+
+      customTarget.addEventListener('change', renderCustomizationPanels);
+      customFruitTarget.addEventListener('change', renderFruitCustomizationPanel);
+
+      document.getElementById('cart-clear').addEventListener('click',()=>{
+        cart={}; renderCart(); refreshCustomizationVisibility();
+        paymentWrap.style.display='none';
+      });
+
+      document.getElementById('cart-checkout').addEventListener('click',()=>{
+        if(!getSession()){ openLogin(); return; }
+        const items=Object.values(cart);
+        if(!items.length){ showNotify("Your cart is empty."); return; }
+
+        payItems.innerHTML = items.map(i=>{
+          const size = i.size ? ` (${i.size})` : '';
+          const adds = (i.addOns&&i.addOns.length) ? ` +${i.addOns.length} add-on(s)` : '';
+          let details = "";
+          if (i.category === "Milk Tea") {
+            details = ` — ${i.ice}, ${i.sugar}`;
+          }
+          return `<li>${i.name}${size}${adds}${details} ×${i.qty} — ${peso(itemPrice(i))}</li>`;
+        }).join("");
+        payTotal.textContent = cartTotalEl.textContent;
+
+        paymentWrap.style.display='block';
+        paymentWrap.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+
+      payMethods?.addEventListener('click', (e)=>{
+        const label = e.target.closest('.chip');
+        if(!label) return;
+        selectedMethod = label.getAttribute('data-method');
+        [...payMethods.querySelectorAll('.chip')].forEach(c=>c.classList.remove('active'));
+        label.classList.add('active');
+        [...payFields.querySelectorAll('[data-form]')].forEach(f=>{
+          f.style.display = (f.getAttribute('data-form')===selectedMethod) ? 'block' : 'none';
+        });
+        payError.textContent = '';
+      });
+
+      payBack?.addEventListener('click', ()=>{
+        paymentWrap.style.display='none';
+      });
+
+      function validMobile(v){ return /^09\d{9}$/.test(v.trim()); }
+      payNow?.addEventListener('click', ()=>{
+        payError.textContent='';
+        if(selectedMethod==='card'){
+          const name=document.getElementById('card-name').value.trim();
+          const num=document.getElementById('card-number').value.replace(/\s+/g,'');
+          const exp=document.getElementById('card-exp').value.trim();
+          const cvc=document.getElementById('card-cvc').value.trim();
+          if(!name || num.length<12 || !/^\d+$/.test(num) || !/^\d{2}\/\d{2}$/.test(exp) || !/^\d{3,4}$/.test(cvc)){
+            payError.textContent='Please enter valid card details.';
+            return;
+          }
+        } else if(selectedMethod==='gcash'){
+          const m=document.getElementById('gcash-msisdn').value;
+          if(!validMobile(m)){ payError.textContent='Enter a valid GCash number (11 digits starting with 09).'; return; }
+        } else if(selectedMethod==='maya'){
+          const m=document.getElementById('maya-msisdn').value;
+          if(!validMobile(m)){ payError.textContent='Enter a valid Maya number (11 digits starting with 09).'; return; }
+        }
+        showNotify('Payment successful! Thank you for your order.',
+                   'Payment complete',
+                   ()=>{ cart={}; renderCart(); refreshCustomizationVisibility(); paymentWrap.style.display='none'; });
+      });
+
+      renderTabs(); renderProducts(); lockMenuButtons();
+      window.__menu_refreshBars = () => { refreshUserbar(); lockMenuButtons(); };
+    }
+
+    const loginModal=document.getElementById('login-modal'),
+          signupModal=document.getElementById('signup-modal'),
+          loginEmail=document.getElementById('login-email'),
+          loginPass=document.getElementById('login-pass'),
+          loginErr=document.getElementById('login-error'),
+          suName=document.getElementById('su-name'),
+          suEmail=document.getElementById('su-email'),
+          suPass=document.getElementById('su-pass'),
+          suErr=document.getElementById('signup-error');
+
+    const openLogin=()=>{loginModal.style.display='flex';loginErr.textContent="";};
+    const closeLogin=()=>{loginModal.style.display='none';};
+    const openSignup=()=>{signupModal.style.display='flex';suErr.textContent="";};
+    const closeSignup=()=>{signupModal.style.display='none';};
+
+    document.getElementById('loginBtnTop').addEventListener('click', openLogin);
+    document.getElementById('signupBtnTop').addEventListener('click', openSignup);
+    document.getElementById('login-cancel').addEventListener('click', closeLogin);
+    document.getElementById('signup-cancel').addEventListener('click', closeSignup);
+    document.getElementById('go-signup').addEventListener('click', (e)=>{e.preventDefault();closeLogin();openSignup();});
+
+    document.getElementById('login-submit').addEventListener('click', ()=>{
+      const email=(loginEmail.value||"").trim(), pass=(loginPass.value||"").trim();
+      const users=JSON.parse(localStorage.getItem('users')||"[]");
+      const u=users.find(x=>x.email===email);
+      if(!u){loginErr.textContent="Account not found.";return;}
+      if(u.password!==pass){loginErr.textContent="Incorrect password.";return;}
+      setSession(u); closeLogin(); refreshUserbar(); window.__menu_refreshBars?.(); showNotify(`Welcome back, ${u.name}!`, 'Welcome');
+    });
+
+    document.getElementById('signup-submit').addEventListener('click', ()=>{
+      const name=(suName.value||"").trim(), email=(suEmail.value||"").trim(), pass=(suPass.value||"").trim();
+      if(!name){suErr.textContent="Please enter your name.";return;}
+      if(!/^[^ ]+@[^ ]+\.[a-z]{2,}$/i.test(email)){suErr.textContent="Enter a valid email.";return;}
+      if(pass.length<6){suErr.textContent="Password must be at least 6 characters.";return;}
+      const users=JSON.parse(localStorage.getItem('users')||"[]");
+      if(users.find(x=>x.email===email)){suErr.textContent="Email already registered.";return;}
+      const u={name,email,password:pass}; users.push(u); localStorage.setItem('users',JSON.stringify(users));
+      setSession(u); closeSignup(); refreshUserbar(); window.__menu_refreshBars?.(); showNotify(`Welcome, ${name}! Account created.`, 'Account created');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      localStorage.removeItem('divsip_session'); refreshUserbar(); window.__menu_refreshBars?.();
+    });
+
+    syncHeaderHeight();
+  
+    const origShowNotify = window.showNotify;
+    window.showNotify = function(message, onClose) {
+      const backdrop = document.createElement("div");
+      backdrop.className = "notify-backdrop";
+      Object.assign(backdrop.style, {
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.4)",
+        zIndex: 2000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: 0
+      });
+
+      const popup = document.createElement("div");
+      popup.className = "notify-popup";
+      Object.assign(popup.style, {
+        background: "var(--panel)",
+        borderRadius: "16px",
+        boxShadow: "0 20px 40px rgba(0,0,0,.25)",
+        padding: "26px",
+        maxWidth: "380px",
+        width: "90%",
+        textAlign: "center",
+        transform: "scale(0.95)",
+        transition: "opacity 0.25s ease, transform 0.25s ease"
+      });
+      popup.innerHTML = `
+        <h3 style="color:var(--pri);margin:0 0 10px;">Notice</h3>
+        <p style="margin:0 0 16px;color:var(--txt);">${message}</p>
+        <button class="btn notify-ok">OK</button>
+      `;
+      const okBtn = popup.querySelector(".notify-ok");
+      okBtn.addEventListener("click", () => {
+        popup.classList.remove("show");
+        backdrop.style.animation = "fadeOutBackdrop 0.2s ease forwards";
+        setTimeout(() => { document.body.removeChild(backdrop); if(onClose) onClose(); }, 220);
+      });
+
+      backdrop.appendChild(popup);
+      document.body.appendChild(backdrop);
+
+      setTimeout(() => popup.classList.add("show"), 10);
+    };
+
+</script>
+</body>
+</html>
