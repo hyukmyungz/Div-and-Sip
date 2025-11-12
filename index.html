@@ -279,7 +279,7 @@
       to { opacity: 0; }
     }
 
-</style>
+  </style>
 </head>
 <body>
 
@@ -1279,6 +1279,59 @@
       setTimeout(() => popup.classList.add("show"), 10);
     };
 
-</script>
+  </script>
+
+  <!-- Netlify Identity widget: central auth. -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script>
+    // Initialize Netlify Identity (works on deployed Netlify sites where Identity is enabled)
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init();
+    }
+
+    // If Identity is available, wire your existing top buttons to open the widget
+    (function(){
+      const loginBtn = document.getElementById('loginBtnTop');
+      const signupBtn = document.getElementById('signupBtnTop');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      if (!loginBtn || !signupBtn) return;
+
+      // Hide the local modals when using Netlify Identity to avoid confusion
+      if (window.netlifyIdentity) {
+        try {
+          document.getElementById('login-modal').style.display = 'none';
+          document.getElementById('signup-modal').style.display = 'none';
+        } catch(e){}
+      }
+
+      // Open Netlify modal instead of local modal
+      loginBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        if (window.netlifyIdentity) window.netlifyIdentity.open('login');
+        else openLogin(); // fallback to local modal if Identity not available (e.g. local preview)
+      });
+      signupBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        if (window.netlifyIdentity) window.netlifyIdentity.open('signup');
+        else openSignup();
+      });
+
+      // Listen for login/logout events from Netlify Identity and sync to local session UI
+      window.netlifyIdentity?.on('login', (user) => {
+        // user has `.email` and `.user_metadata` including full_name when provided
+        const u = { name: (user?.user_metadata?.full_name) || user?.email, email: user?.email };
+        localStorage.setItem('divsip_session', JSON.stringify(u));
+        // Update UI without full reload
+        if (window.__menu_refreshBars) window.__menu_refreshBars();
+      });
+
+      window.netlifyIdentity?.on('logout', () => {
+        localStorage.removeItem('divsip_session');
+        if (window.__menu_refreshBars) window.__menu_refreshBars();
+      });
+    })();
+  </script>
+
 </body>
 </html>
