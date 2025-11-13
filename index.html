@@ -322,7 +322,10 @@
     <div class="userbar" id="userbar">
       <div class="inner">
         <div id="userpill" class="pill">Guest — logged out</div>
-        <button id="loginBtnTop" class="pill strong">Log in</button>
+<button id="loginBtnTop" class="pill strong">Log in</button>
+<button id="signupBtnTop" class="pill">Sign up</button>
+<button id="adminLoginBtn" class="pill" title="Demo: log in as admin">Log in as admin</button>
+<button id="logoutBtn" class="pill strong" style="display:none;">Log out</button>
         <button id="signupBtnTop" class="pill">Sign up</button>
         <button id="logoutBtn" class="pill strong" style="display:none;">Log out</button>
       </div>
@@ -1279,17 +1282,47 @@
       setTimeout(() => popup.classList.add("show"), 10);
     };
 
-  </script>
+  
+// ---------- Admin quick-login (demo only) ----------
+const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-  <!-- Netlify Identity widget: central auth. -->
+function isAdmin() {
+  const u = getSession();
+  return !!(u && u.admin);
+}
+
+if (typeof refreshUserbar_original === 'undefined') {
+  var refreshUserbar_original = refreshUserbar;
+  refreshUserbar = function(){
+    refreshUserbar_original();
+    const u = getSession();
+    if (u && u.admin) {
+      adminLoginBtn.style.display = "none";
+      userpill.textContent = `${u.name} (Admin) — logged in`;
+    }
+  }
+}
+
+adminLoginBtn?.addEventListener('click', () => {
+  const adminUser = {
+    name: "Admin",
+    email: "admin@divsip.local",
+    admin: true
+  };
+  setSession(adminUser);
+  refreshUserbar();
+  window.__menu_refreshBars?.();
+  showNotify('Logged in as Admin (demo).', 'Admin Login');
+});
+
+</script>
+
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script>
-    // Initialize Netlify Identity (works on deployed Netlify sites where Identity is enabled)
     if (window.netlifyIdentity) {
       window.netlifyIdentity.init();
     }
 
-    // If Identity is available, wire your existing top buttons to open the widget
     (function(){
       const loginBtn = document.getElementById('loginBtnTop');
       const signupBtn = document.getElementById('signupBtnTop');
@@ -1297,7 +1330,6 @@
 
       if (!loginBtn || !signupBtn) return;
 
-      // Hide the local modals when using Netlify Identity to avoid confusion
       if (window.netlifyIdentity) {
         try {
           document.getElementById('login-modal').style.display = 'none';
@@ -1305,11 +1337,10 @@
         } catch(e){}
       }
 
-      // Open Netlify modal instead of local modal
       loginBtn.addEventListener('click', function(e){
         e.preventDefault();
         if (window.netlifyIdentity) window.netlifyIdentity.open('login');
-        else openLogin(); // fallback to local modal if Identity not available (e.g. local preview)
+        else openLogin();
       });
       signupBtn.addEventListener('click', function(e){
         e.preventDefault();
@@ -1317,12 +1348,9 @@
         else openSignup();
       });
 
-      // Listen for login/logout events from Netlify Identity and sync to local session UI
       window.netlifyIdentity?.on('login', (user) => {
-        // user has `.email` and `.user_metadata` including full_name when provided
         const u = { name: (user?.user_metadata?.full_name) || user?.email, email: user?.email };
         localStorage.setItem('divsip_session', JSON.stringify(u));
-        // Update UI without full reload
         if (window.__menu_refreshBars) window.__menu_refreshBars();
       });
 
